@@ -44,14 +44,14 @@ function onClickHandler(info, tab) {
         downloadImage(
           canvas,
           "image/jpeg",
-          fileName.endsWith(".jpeg") ? `${fileName}.jpeg` : fileName
+          fileName.endsWith(".jpeg") ?  fileName: `${fileName}.jpeg`
         );
         break;
       case DOWNLOAD_PNG:
         downloadImage(
           canvas,
           "image/png",
-          fileName.endsWith(".png") ? `${fileName}.png` : fileName
+          fileName.endsWith(".png") ?  fileName : `${fileName}.png`
         );
         break;
     }
