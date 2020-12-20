@@ -5,9 +5,7 @@
   "permissions": [
     "contextMenus",
     "downloads",
-    "http://*/*",
-    "https://*/*",
-    "file://*/*"
+    "activeTab"
   ],
   "background": {
     "scripts": ["contextMenu.js"],
