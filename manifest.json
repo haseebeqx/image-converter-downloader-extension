@@ -1,8 +1,14 @@
 {
   "name": "Image Convert and Download",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Allows to download svg and images in different formats",
-  "permissions": ["contextMenus", "downloads"],
+  "permissions": [
+    "contextMenus",
+    "downloads",
+    "http://*/*",
+    "https://*/*",
+    "file://*/*"
+  ],
   "background": {
     "scripts": ["contextMenu.js"],
     "persistent": false
