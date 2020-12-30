@@ -7,6 +7,9 @@ const COPY_DATA_URL_JPEG = "icde-context-data_urls-jpeg";
 const FAVICON = "icde-context-favicon";
 const FAVICON_JPEG = "icde-context-favicon-download-jpeg";
 const FAVICON_PNG = "icde-context-favicon-download-png";
+const VISIBLE_PAGE = "icde-contxet-visible-page";
+const VISIBLE_PAGE_PNG = "icde-contxet-visible-page-png";
+const VISIBLE_PAGE_JPEG = "icde-context=visible-page-jpeg";
 
 function copyImageDataURL(canvas, type) {
   let input = document.createElement("textarea");
@@ -25,7 +28,27 @@ function downloadImage(canvas, type, fileName) {
   }, type);
 }
 
+function getFileName(srcUrl, extension){
+  const fileName = srcUrl.split("/").pop().split("#")[0].split("?")[0];
+
+  if(!fileName || fileName.length > 60){
+    return `capture.${extension}`
+  }
+  return fileName.endsWith(`.${extension}`) ? fileName : `${fileName}.${extension}`
+}
+
+function captureVisiblePage(menuId){
+  const format = menuId === VISIBLE_PAGE_PNG ? "png" : "jpeg";
+  chrome.tabs.captureVisibleTab({format},function(data){
+    chrome.downloads.download({url: data, filename: `capture.${format}`});
+  })
+}
+
 function onClickHandler(info, tab) {
+  if(info.menuItemId === VISIBLE_PAGE_PNG || info.menuItemId === VISIBLE_PAGE_JPEG){
+    return captureVisiblePage(info.menuItemId)
+  }
+
   let image = new Image();
   let srcUrl = "";
   image.crossOrigin = "Anonymous";
@@ -35,7 +58,6 @@ function onClickHandler(info, tab) {
     canvas.height = image.height;
     const context = canvas.getContext("2d");
     context.drawImage(image, 0, 0, image.width, image.height);
-    const fileName = srcUrl.split("/").pop().split("#")[0].split("?")[0];
 
     switch (info.menuItemId) {
       case COPY_DATA_URL_JPEG:
@@ -49,7 +71,7 @@ function onClickHandler(info, tab) {
         downloadImage(
           canvas,
           "image/jpeg",
-          fileName.endsWith(".jpeg") ? fileName : `${fileName}.jpeg`
+          getFileName(srcUrl, 'jpeg')
         );
         break;
       case DOWNLOAD_PNG:
@@ -57,13 +79,14 @@ function onClickHandler(info, tab) {
         downloadImage(
           canvas,
           "image/png",
-          fileName.endsWith(".png") ? fileName : `${fileName}.png`
+          getFileName(srcUrl, 'png')
         );
         break;
     }
   };
   if (info.menuItemId === FAVICON_JPEG || info.menuItemId === FAVICON_PNG) {
     srcUrl = tab.favIconUrl;
+    
   } else {
     srcUrl = info.srcUrl;
   }
@@ -123,13 +146,33 @@ chrome.runtime.onInstalled.addListener(function () {
     title: "download as PNG",
     contexts: ["all"],
     parentId: FAVICON,
-    id: FAVICON_JPEG,
+    id: FAVICON_PNG,
   });
 
   chrome.contextMenus.create({
     title: "download as JPEG",
     contexts: ["all"],
     parentId: FAVICON,
-    id: FAVICON_PNG,
+    id: FAVICON_JPEG,
+  });
+
+  chrome.contextMenus.create({
+    title: 'Take Screenshot',
+    contexts: ["all"],
+    id: VISIBLE_PAGE
+  });
+
+  chrome.contextMenus.create({
+    title: "download as JPEG",
+    contexts: ["all"],
+    parentId: VISIBLE_PAGE,
+    id: VISIBLE_PAGE_JPEG,
+  });
+
+  chrome.contextMenus.create({
+    title: "download as PNG",
+    contexts: ["all"],
+    parentId: VISIBLE_PAGE,
+    id: VISIBLE_PAGE_PNG,
   });
 });

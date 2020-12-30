@@ -1,7 +1,7 @@
 {
   "name": "Image Convert and Download",
   "version": "0.3",
-  "description": "Allows to download svg and images in different formats",
+  "description": "Allows to download svg and images and take screenshots in different formats",
   "permissions": [
     "contextMenus",
     "downloads",
